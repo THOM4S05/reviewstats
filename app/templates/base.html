@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10291f">
+  <title>{{ title }} · ReviewStats</title>
+  <link rel="manifest" href="{{ url_for('static', path='/manifest.webmanifest') }}">
+  <link rel="icon" href="{{ url_for('static', path='/icon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}?v=mobile-20260831-4">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">ReviewStats</a>
+    <nav aria-label="Primary navigation">
+      <a href="/"{% if request.url.path == '/' %} aria-current="page"{% endif %}>Dashboard</a>
+      <a href="/reviews"{% if request.url.path.startswith('/reviews') %} aria-current="page"{% endif %}>Reviews</a>
+      <a href="/scanpoints"{% if request.url.path.startswith('/scanpoints') %} aria-current="page"{% endif %}>Scanpoints</a>
+      <a href="/mock-pos"{% if request.url.path.startswith('/mock-pos') or request.url.path.startswith('/orders/') %} aria-current="page"{% endif %}>Mock POS</a>
+      <a href="/testing"{% if request.url.path.startswith('/testing') %} aria-current="page"{% endif %}>Testing mode</a>
+      <a href="/docs">API docs</a>
+    </nav>
+  </header>
+  <main class="shell">
+    {% block content %}{% endblock %}
+  </main>
+  <script src="{{ url_for('static', path='/app.js') }}?v=mobile-20260831"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

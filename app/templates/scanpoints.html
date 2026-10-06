@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading">
+  <div>
+    <p class="eyebrow">Physical network</p>
+    <h1>Scanpoints</h1>
+    <p>Provision one permanent NFC + QR destination per table. Reassign it without reprinting.</p>
+  </div>
+</section>
+<section class="scanpoint-layout">
+  <form id="scanpoint-form" class="form-card narrow">
+    <h2>Provision scanpoint</h2>
+    <label>Serial number<input name="serial_number" placeholder="SP-0001" maxlength="100" required></label>
+    <label>Display label<input name="label" placeholder="Window table scanpoint" maxlength="100" required></label>
+    <label>Initial table<input name="table_ref" placeholder="1" maxlength="100"></label>
+    <p class="privacy-note">The public URL uses a random opaque identifier. Scan events deliberately exclude IP addresses, cookies, fingerprints, and user-agent storage.</p>
+    <div id="scanpoint-message" role="status"></div>
+    <button type="submit">Provision</button>
+  </form>
+  <section>
+    <div class="section-title"><div><p class="eyebrow">Inventory</p><h2>Installed devices</h2></div></div>
+    <div class="scanpoint-list" data-scanpoint-list>Loading…</div>
+  </section>
+</section>
+{% endblock %}
+{% block scripts %}<script>window.initScanpoints();</script>{% endblock %}

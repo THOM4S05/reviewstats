@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading"><div><p class="eyebrow">End-to-end demo</p><h1>Testing mode</h1><p>Simulate a Google review, then run the same matcher used for imported reviews.</p></div></section>
+<section class="form-card narrow">
+  <form id="review-form">
+    <label>Rating<select name="rating"><option value="5">★★★★★</option><option value="4">★★★★☆</option><option value="3">★★★☆☆</option><option value="2">★★☆☆☆</option><option value="1">★☆☆☆☆</option></select></label>
+    <label>Comment<textarea name="comment" rows="4" maxlength="4000">Great burger and quick service</textarea></label>
+    <label>Reviewer display name<input name="reviewer_display_name" value="Test Customer"></label>
+    <label>Created at<input type="datetime-local" name="created_at" required></label>
+    <label class="check"><input type="checkbox" name="run_matcher" checked> Run matcher immediately</label>
+    <div id="review-message" role="status"></div>
+    <button type="submit">Create mock Google review</button>
+  </form>
+</section>
+<section class="demo-steps"><span>1. Create order</span><span>2. Scan QR</span><span>3. Create review here</span><span>4. View attribution</span></section>
+{% endblock %}
+{% block scripts %}<script>window.initReviewForm();</script>{% endblock %}
+

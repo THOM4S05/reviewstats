@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading"><div><p class="eyebrow">Development tool</p><h1>Mock POS</h1><p>Send a paid table order through the canonical POS pipeline.</p></div></section>
+<section class="form-card">
+  <form id="order-form">
+    <div class="form-grid">
+      <label>Order ID<input name="external_order_id" value="TEST-001" maxlength="100" required></label>
+      <label>Order type<select name="order_type"><option>TAKEAWAY</option><option>DINE_IN</option><option>RETAIL</option></select></label>
+      <label>Staff<input name="staff_name" value="Anja" maxlength="100"></label>
+      <label>Table<input name="table_number" value="1" maxlength="50" required></label>
+      <label>Paid at<input type="datetime-local" name="paid_at" required></label>
+    </div>
+    <div class="items-editor">
+      <div class="section-title"><h2>Items</h2><button type="button" class="small secondary" data-add-item>Add item</button></div>
+      <div id="item-rows">
+        <div class="item-row"><label class="item-input item-name">Item<input value="Chicken Nugget" required></label><label class="item-input">Quantity<input data-item-quantity type="number" value="1" min="1" required></label><label class="item-input">Price (€)<input data-item-price type="number" value="8.50" min="0" step="0.01" required></label><button type="button" class="icon" data-remove-item aria-label="Remove Chicken Nugget">×</button></div>
+        <div class="item-row"><label class="item-input item-name">Item<input value="Mashed Potatoes" required></label><label class="item-input">Quantity<input data-item-quantity type="number" value="1" min="1" required></label><label class="item-input">Price (€)<input data-item-price type="number" value="6.00" min="0" step="0.01" required></label><button type="button" class="icon" data-remove-item aria-label="Remove Mashed Potatoes">×</button></div>
+        <div class="item-row"><label class="item-input item-name">Item<input value="Chips" required></label><label class="item-input">Quantity<input data-item-quantity type="number" value="1" min="1" required></label><label class="item-input">Price (€)<input data-item-price type="number" value="4.00" min="0" step="0.01" required></label><button type="button" class="icon" data-remove-item aria-label="Remove Chips">×</button></div>
+        <div class="item-row"><label class="item-input item-name">Item<input value="Coke" required></label><label class="item-input">Quantity<input data-item-quantity type="number" value="1" min="1" required></label><label class="item-input">Price (€)<input data-item-price type="number" value="2.50" min="0" step="0.01" required></label><button type="button" class="icon" data-remove-item aria-label="Remove Coke">×</button></div>
+      </div>
+    </div>
+    <div id="form-message" role="status"></div>
+    <button type="submit">Create order & QR</button>
+  </form>
+</section>
+{% endblock %}
+{% block scripts %}<script>window.initOrderForm();</script>{% endblock %}

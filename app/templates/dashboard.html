@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading">
+  <div>
+    <p class="eyebrow">{{ business.name }}</p>
+    <h1>Review statistics</h1>
+    <p>Timing-based estimates, never deterministic customer identity.</p>
+  </div>
+  <div class="actions dashboard-actions">
+    <button data-run-matcher>Run matcher</button>
+    <a class="button secondary" href="/scanpoints">Manage scanpoints</a>
+    <a class="button secondary" href="/mock-pos">Create order</a>
+  </div>
+</section>
+
+<section class="operations-strip">
+  <div><span>Active scanpoints</span><strong>{{ metrics.active_scanpoints }}</strong></div>
+  <div><span>Scans awaiting POS data</span><strong>{{ metrics.awaiting_pos }}</strong></div>
+  <div><span>Mock POS sources</span><strong>{{ metrics.healthy_pos }}</strong></div>
+</section>
+
+<section class="metrics">
+  <div><span>Orders today</span><strong>{{ metrics.orders }}</strong></div>
+  <div><span>QR scans</span><strong>{{ metrics.scans }}</strong></div>
+  <div><span>Review records</span><strong>{{ metrics.reviews }}</strong></div>
+  <div><span>High-confidence matches</span><strong>{{ metrics.high }}</strong></div>
+  <div><span>Ambiguous matches</span><strong>{{ metrics.ambiguous }}</strong></div>
+  <div><span>Unmatched scans</span><strong>{{ metrics.unmatched_scans }}</strong></div>
+</section>
+
+<section class="rate-strip">
+  <div><span>Scan rate</span><strong>{{ metrics.scan_rate }}%</strong><small>scans ÷ orders</small></div>
+  <div><span>Estimated review conversion</span><strong>~{{ metrics.estimated_conversion }}%</strong><small>likely matched reviews ÷ scans</small></div>
+</section>
+
+<section class="rating-summary-section">
+  <div class="section-title rating-summary-heading">
+    <div><p class="eyebrow">Evidence-aware ratings</p><h2>Attributed rating summaries</h2></div>
+    <p class="summary-disclosure">Includes high-confidence matches and complete ambiguity groups only when every potentially swapped review has the same rating. These remain attribution estimates, not confirmed customer identities.</p>
+  </div>
+  <div class="rating-summary-grid">
+    <article class="rating-summary-card">
+      <h3>Average rating by item</h3>
+      {% if item_ratings %}
+      <div class="table-scroll">
+        <table class="rating-table">
+          <thead><tr><th>Item</th><th>Average</th><th>Eligible reviews</th></tr></thead>
+          <tbody>
+          {% for row in item_ratings %}
+            <tr class="rating-data-row">
+              <td>
+                <button type="button" class="rating-detail-button" data-rating-trigger
+                  data-rating-kind="item"
+                  data-rating-name="{{ row.name }}" data-rating-average="{{ '%.2f'|format(row.average_rating) }}"
+                  data-rating-total="{{ row.eligible_review_count }}"
+                  data-rating-1="{{ row.rating_counts[1] }}" data-rating-2="{{ row.rating_counts[2] }}"
+                  data-rating-3="{{ row.rating_counts[3] }}" data-rating-4="{{ row.rating_counts[4] }}"
+                  data-rating-5="{{ row.rating_counts[5] }}"
+                  aria-label="View rating distribution for {{ row.name }}">
+                  <span class="rating-name">{{ row.name }}</span>
+                </button>
+              </td>
+              <td data-label="Average"><span class="rating-star">★</span> {{ '%.2f'|format(row.average_rating) }}</td>
+              <td data-label="Eligible reviews">{{ row.eligible_review_count }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="rating-empty"><strong>No eligible item ratings yet</strong><span>High-confidence or swap-safe attributed reviews will appear here.</span></div>
+      {% endif %}
+    </article>
+    <article class="rating-summary-card">
+      <h3>Average rating by worker</h3>
+      <p class="worker-rating-help" id="worker-rating-help">Adjusts a worker’s rating for the typical ratings of the items on their orders. Results are reliability-weighted and remain probabilistic attribution estimates.</p>
+      {% if worker_ratings %}
+      <div class="table-scroll">
+        <table class="rating-table worker-rating-table" aria-describedby="worker-rating-help">
+          <thead><tr><th>Worker</th><th>Raw average</th><th>Rebalanced rating</th><th>Eligible reviews</th></tr></thead>
+          <tbody>
+          {% for row in worker_ratings %}
+            <tr class="rating-data-row">
+              <td>
+                <button type="button" class="rating-detail-button" data-rating-trigger
+                  data-rating-kind="worker"
+                  data-rating-name="{{ row.name }}" data-rating-average="{{ '%.2f'|format(row.average_rating) }}"
+                  data-rating-rebalanced="{{ '%.2f'|format(row.rebalanced_rating) }}"
+                  data-rating-adjustment="{{ '%+.2f'|format(row.rating_adjustment) }}"
+                  data-rating-reliability="{{ '%.4f'|format(row.reliability) }}"
+                  data-rating-low-sample="{{ 'true' if row.eligible_review_count < 5 else 'false' }}"
+                  data-rating-total="{{ row.eligible_review_count }}"
+                  data-rating-1="{{ row.rating_counts[1] }}" data-rating-2="{{ row.rating_counts[2] }}"
+                  data-rating-3="{{ row.rating_counts[3] }}" data-rating-4="{{ row.rating_counts[4] }}"
+                  data-rating-5="{{ row.rating_counts[5] }}"
+                  aria-label="View rating distribution for {{ row.name }}">
+                  <span class="rating-name">{{ row.name }}</span>
+                </button>
+              </td>
+              <td data-label="Raw average"><span class="rating-star">★</span> {{ '%.2f'|format(row.average_rating) }}</td>
+              <td data-label="Rebalanced" class="rebalanced-cell"><span class="rating-star">★</span> {{ '%.2f'|format(row.rebalanced_rating) }} <span class="rating-adjustment">{{ '%+.2f'|format(row.rating_adjustment) }}</span></td>
+              <td data-label="Eligible reviews">{{ row.eligible_review_count }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="rating-empty"><strong>No eligible worker ratings yet</strong><span>Blank worker names are ignored.</span></div>
+      {% endif %}
+    </article>
+  </div>
+</section>
+
+<div class="rating-modal" data-rating-modal hidden>
+  <div class="rating-modal-backdrop" data-rating-modal-close></div>
+  <section class="rating-modal-panel" role="dialog" aria-modal="true" aria-labelledby="rating-modal-title" aria-describedby="rating-modal-summary">
+    <button type="button" class="rating-modal-close" data-rating-modal-close aria-label="Close rating distribution">×</button>
+    <p class="eyebrow">Eligible attributed reviews</p>
+    <h2 id="rating-modal-title"></h2>
+    <p id="rating-modal-summary" class="rating-modal-summary"></p>
+    <dl class="worker-context" data-worker-context hidden>
+      <div><dt>Raw average</dt><dd data-worker-raw></dd></div>
+      <div><dt>Rebalanced rating</dt><dd data-worker-rebalanced></dd></div>
+      <div><dt>Adjustment</dt><dd data-worker-adjustment></dd></div>
+      <div><dt>Eligible reviews</dt><dd data-worker-total></dd></div>
+    </dl>
+    <p class="low-sample-warning" data-worker-low-sample hidden>Low sample: fewer than 5 eligible reviews. The rebalanced rating is strongly shrunk toward the business average.</p>
+    <h3 class="observed-chart-title">Observed eligible rating distribution</h3>
+    <div class="rating-chart" data-rating-chart aria-hidden="true"></div>
+    <div class="sr-only" data-rating-chart-accessible></div>
+    <p class="rating-modal-disclosure">Only evidence-eligible attribution estimates are represented. No reviewer identity is shown or confirmed.</p>
+  </section>
+</div>
+
+<div class="section-title">
+  <div><p class="eyebrow">Attribution timeline</p><h2>Order → Scan → Likely Google Review</h2></div>
+</div>
+
+{% if not rows %}
+<section class="empty-state">
+  <h2>No orders yet</h2>
+  <p>Create a purchase in Mock POS to start the demonstration.</p>
+  <a class="button" href="/mock-pos">Create first order</a>
+</section>
+{% endif %}
+
+<section class="attribution-list">
+{% for row in rows %}
+  <article class="attribution-card">
+    <div class="stage order-stage">
+      <p class="stage-label">Order</p>
+      <h3>#{{ row.order.external_order_id }}</h3>
+      <p class="time">{{ row.order.ordered_at.strftime('%H:%M:%S') }}</p>
+      <p>{{ row.order.order_type.value.replace('_', ' ').title() }}{% if row.order.staff_name %} · {{ row.order.staff_name }}{% endif %}</p>
+      <ul class="items">
+        {% for item in row.order.items %}<li>{{ item.quantity }}× {{ item.name }} <span>€{{ '%.2f'|format(item.price) }}</span></li>{% endfor %}
+      </ul>
+      <a href="/orders/{{ row.order.id }}/qr">Show QR</a>
+    </div>
+    <div class="arrow">→</div>
+    <div class="stage">
+      <p class="stage-label">QR scan</p>
+      {% if row.scan %}
+        <h3>{{ row.scan.scanned_at.strftime('%H:%M:%S') }}</h3>
+        <p>Scan event #{{ row.scan.id }}</p>
+      {% else %}
+        <h3 class="muted">Not scanned</h3>
+        <p>Waiting for QR visit</p>
+      {% endif %}
+    </div>
+    <div class="arrow">→</div>
+    <div class="stage review-stage">
+      <p class="stage-label">Likely {% if row.review and row.review.provider == 'MOCK_GOOGLE' %}Mock {% endif %}Google Review</p>
+      {% if row.review %}
+        <div class="stars">{{ '★' * row.review.rating }}{{ '☆' * (5 - row.review.rating) }}</div>
+        <blockquote>“{{ row.review.comment or 'No written comment' }}”</blockquote>
+        <p>{{ row.review.google_create_time.strftime('%H:%M:%S') }}</p>
+      {% else %}
+        <h3 class="muted">?</h3><p>No likely review yet</p>
+      {% endif %}
+    </div>
+    <div class="match-panel">
+      <p class="stage-label">Match</p>
+      {% if row.match %}
+        <span class="badge {{ row.match.match_status.value|lower }}">{{ row.match.match_status.value.replace('_', ' ') }}</span>
+        <strong class="confidence">{{ (row.match.confidence_score * 100)|round|int }}%</strong>
+        <small>Estimated confidence</small>
+        <p>{{ row.match.time_difference_seconds // 60 }}m {{ row.match.time_difference_seconds % 60 }}s scan → review</p>
+        <small>{{ row.match.candidate_count }} candidate scan{% if row.match.candidate_count != 1 %}s{% endif %}</small>
+      {% else %}
+        <span class="badge unmatched">UNMATCHED</span>
+        <p>No timing attribution</p>
+      {% endif %}
+    </div>
+  </article>
+{% endfor %}
+</section>
+{% endblock %}
+{% block scripts %}<script>window.initRatingDistributions();</script>{% endblock %}

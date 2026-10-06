@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="qr-layout">
+  <div>
+    <p class="eyebrow">Order created</p>
+    <h1>#{{ order.external_order_id }}</h1>
+    <p>Scan with a phone. The backend records the scan and immediately opens the mock Google review form.</p>
+    <div class="notice">For a physical phone, <code>PUBLIC_BASE_URL</code> must be a URL that phone can reach (LAN address or HTTPS tunnel).</div>
+    <div class="actions qr-actions">
+      <a class="button secondary" href="/mock-pos">Create another</a>
+      <a class="button" href="/">Dashboard</a>
+    </div>
+  </div>
+  <div class="qr-card">
+    <img src="/api/orders/{{ order.id }}/qr" alt="Review QR for order {{ order.external_order_id }}">
+    <strong>Scan → Mock Google Review</strong>
+    <small>{{ scan_url }}</small>
+  </div>
+</section>
+{% endblock %}

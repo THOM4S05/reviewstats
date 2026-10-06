@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}">
+</head>
+<body class="customer-review-page">
+  <main class="customer-review-shell">
+    <div class="mock-banner">DEVELOPMENT DEMO · NOT GOOGLE</div>
+    <section class="google-review-card">
+      <div class="mock-google-wordmark"><span>G</span> Mock Reviews</div>
+      <div class="business-avatar">{{ business.name[0]|upper }}</div>
+      <p class="review-prompt">How was your experience at</p>
+      <h1>{{ business.name }}?</h1>
+      <form id="customer-review-form" data-token="{{ token }}">
+        <fieldset class="star-picker">
+          <legend>Choose a star rating</legend>
+          {% for rating in [5,4,3,2,1] %}
+            <input type="radio" id="rating-{{ rating }}" name="rating" value="{{ rating }}" {% if rating == 5 %}required{% endif %}>
+            <label for="rating-{{ rating }}" aria-label="{{ rating }} stars">★</label>
+          {% endfor %}
+        </fieldset>
+        <label class="customer-field">Share details of your experience
+          <textarea name="comment" rows="4" maxlength="4000" placeholder="Tell others what you liked or how the business could improve"></textarea>
+        </label>
+        <label class="customer-field">Display name <span>(optional)</span>
+          <input name="reviewer_display_name" maxlength="255" placeholder="Your name">
+        </label>
+        <p class="mock-disclosure">This test review is stored only in the local MVP database. It is not submitted to Google or published publicly.</p>
+        <div id="customer-review-message" role="status"></div>
+        <button class="google-submit" type="submit">Post mock review</button>
+      </form>
+    </section>
+  </main>
+  <script src="{{ url_for('static', path='/app.js') }}"></script>
+  <script>window.initCustomerReviewForm();</script>
+</body>
+</html>

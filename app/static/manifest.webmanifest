@@ -1,0 +1,17 @@
+{
+  "name": "ReviewStats",
+  "short_name": "ReviewStats",
+  "description": "Probabilistic scanpoint-to-review analytics for restaurant owners.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f6f2",
+  "theme_color": "#10291f",
+  "icons": [
+    {
+      "src": "/static/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% macro match_label(match, compact=false) -%}
+  {% if not match %}
+    <span class="review-status pending">Pending</span>
+  {% elif match.match_status.value == 'HIGH_CONFIDENCE' %}
+    <span class="review-status high_confidence">{{ 'High' if compact else 'High confidence' }}</span>
+  {% elif match.match_status.value == 'PROBABLE' %}
+    <span class="review-status probable">Probable</span>
+  {% elif match.match_status.value == 'AMBIGUOUS' %}
+    <span class="review-status ambiguous">Ambiguous</span>
+  {% else %}
+    <span class="review-status unmatched">Unmatched</span>
+  {% endif %}
+{%- endmacro %}
+
+{% block content %}
+<section class="review-ledger-heading">
+  <div>
+    <p class="eyebrow">Review ledger</p>
+    <h1>All reviews <span>{{ review_count }}</span></h1>
+  </div>
+  <p>Newest first · {{ timezone_name }}</p>
+</section>
+
+<p class="review-ledger-note">Tap any review to see its complete timing, attribution, scan, and likely-order metadata. Reviewer identity is intentionally not shown.</p>
+
+{% if not reviews %}
+<section class="empty-state review-ledger-empty">
+  <h2>No reviews yet</h2>
+  <p>Imported and mock reviews will appear here.</p>
+  <a class="button" href="/testing">Create a mock review</a>
+</section>
+{% else %}
+<section class="review-ledger" aria-label="All reviews">
+  {% for row in reviews %}
+  <details class="review-record">
+    <summary>
+      <span class="review-score" aria-label="{{ row.review.rating }} out of 5 stars"><strong>{{ row.review.rating }}</strong><span>★</span></span>
+      <span class="review-summary-copy">
+        <strong>{{ row.review.comment or 'No written comment' }}</strong>
+        <span>Review #{{ row.review.id }} · {{ 'Mock Google' if row.review.provider == 'MOCK_GOOGLE' else row.review.provider.replace('_', ' ').title() }}</span>
+      </span>
+      <span class="review-summary-meta">
+        <time datetime="{{ row.review.google_create_time.isoformat() }}">{{ row.created_at_local.strftime('%d %b · %H:%M') }}</time>
+        {{ match_label(row.match, true) }}
+      </span>
+      <span class="review-chevron" aria-hidden="true">›</span>
+    </summary>
+
+    <div class="review-record-detail">
+      <section class="review-detail-section review-text-detail">
+        <div class="review-detail-title"><p class="eyebrow">Review content</p><strong>{{ row.review.rating }} / 5 stars</strong></div>
+        <blockquote>“{{ row.review.comment or 'No written comment' }}”</blockquote>
+        <dl class="review-meta-grid">
+          <div><dt>Internal review</dt><dd>#{{ row.review.id }}</dd></div>
+          <div><dt>Provider</dt><dd>{{ 'Mock Google' if row.review.provider == 'MOCK_GOOGLE' else row.review.provider.replace('_', ' ').title() }}</dd></div>
+          <div><dt>Created</dt><dd>{{ row.created_at_local.strftime('%d %b %Y · %H:%M:%S') }}</dd></div>
+          <div><dt>Updated</dt><dd>{{ row.updated_at_local.strftime('%d %b %Y · %H:%M:%S') }}</dd></div>
+          <div><dt>Retrieved</dt><dd>{{ row.retrieved_at_local.strftime('%d %b %Y · %H:%M:%S') }}</dd></div>
+          <div class="wide"><dt>Provider review ID</dt><dd><code>{{ row.review.google_review_id }}</code></dd></div>
+        </dl>
+      </section>
+
+      <section class="review-detail-section">
+        <div class="review-detail-title"><p class="eyebrow">Timing attribution</p>{{ match_label(row.match) }}</div>
+        {% if row.match %}
+        <dl class="review-meta-grid">
+          <div><dt>Confidence</dt><dd>{{ (row.match.confidence_score * 100)|round|int }}%</dd></div>
+          <div><dt>Candidates</dt><dd>{{ row.match.candidate_count }}</dd></div>
+          <div><dt>Scan → review</dt><dd>{% if row.match.time_difference_seconds is not none %}{{ row.match.time_difference_seconds // 60 }}m {{ row.match.time_difference_seconds % 60 }}s{% else %}—{% endif %}</dd></div>
+          <div><dt>Runner-up gap</dt><dd>{% if row.match.second_best_gap_seconds is not none %}{{ row.match.second_best_gap_seconds }}s{% else %}—{% endif %}</dd></div>
+          <div><dt>Algorithm</dt><dd>{{ row.match.algorithm_version }}</dd></div>
+          <div><dt>Match record</dt><dd>#{{ row.match.id }}</dd></div>
+          <div><dt>Scan event</dt><dd>{% if row.scan %}#{{ row.scan.id }}{% else %}—{% endif %}</dd></div>
+          <div><dt>Scan time</dt><dd>{% if row.scanned_at_local %}{{ row.scanned_at_local.strftime('%d %b · %H:%M:%S') }}{% else %}—{% endif %}</dd></div>
+          <div><dt>Scan source</dt><dd>{% if row.scan and row.scan.scanpoint_id %}Permanent scanpoint #{{ row.scan.scanpoint_id }}{% elif row.scan and row.scan.review_token_id %}Order QR{% else %}—{% endif %}</dd></div>
+          <div><dt>Resolution</dt><dd>{{ row.scan.resolution_reason if row.scan and row.scan.resolution_reason else '—' }}</dd></div>
+        </dl>
+        {% if row.explanation.get('basis') %}<p class="review-basis">{{ row.explanation.get('basis')|capitalize }}.</p>{% endif %}
+        <a class="review-raw-link" href="/api/reviews/{{ row.review.id }}/attribution">View candidate and audit metadata</a>
+        {% else %}
+        <p class="review-basis">Matching has not been run for this review yet.</p>
+        {% endif %}
+      </section>
+
+      {% if row.order %}
+      <section class="review-detail-section likely-order-detail">
+        <div class="review-detail-title"><p class="eyebrow">Likely order</p><a href="/orders/{{ row.order.id }}/qr">Show QR</a></div>
+        <h3>#{{ row.order.external_order_id }}</h3>
+        <dl class="review-meta-grid">
+          <div><dt>Order type</dt><dd>{{ row.order.order_type.value.replace('_', ' ').title() }}</dd></div>
+          <div><dt>Total</dt><dd>€{{ '%.2f'|format(row.order.total) }}</dd></div>
+          <div><dt>Worker</dt><dd>{{ row.order.staff_name or '—' }}</dd></div>
+          <div><dt>Table</dt><dd>{{ row.order.table_number or '—' }}</dd></div>
+          <div><dt>Ordered</dt><dd>{{ row.ordered_at_local.strftime('%d %b · %H:%M:%S') }}</dd></div>
+          <div><dt>Paid</dt><dd>{% if row.paid_at_local %}{{ row.paid_at_local.strftime('%d %b · %H:%M:%S') }}{% else %}—{% endif %}</dd></div>
+        </dl>
+        <ul class="review-order-items">
+          {% for item in row.order.items %}<li><span>{{ item.quantity }}× {{ item.name }}</span><strong>€{{ '%.2f'|format(item.price) }}</strong></li>{% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+      <p class="review-privacy-disclosure">Timing attribution is probabilistic. Google does not supply a scanpoint or order identifier, and this page does not display reviewer identity.</p>
+    </div>
+  </details>
+  {% endfor %}
+</section>
+{% endif %}
+{% endblock %}
