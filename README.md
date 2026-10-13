@@ -6,7 +6,23 @@ A personal web application connecting mock POS orders, QR/NFC scans and simulate
 
 ReviewStats explores a simple question: **which order is a review most likely to belong to?** It brings orders, scans and reviews into one place, uses scan timing to rank possible matches, and lets the owner investigate the evidence behind each result.
 
-[Quick start](#quick-start) · [Demo](#try-the-demo) · [Project structure](#project-structure) · [Matching](docs/MATCHING.md) · [Tests](#tests)
+[Preview](#site-preview) · [Quick start](#quick-start) · [Demo](#try-the-demo) · [Project structure](#project-structure) · [Matching](docs/MATCHING.md) · [Tests](#tests)
+
+## Site preview
+
+Screenshots of the local demo using synthetic orders, scans and reviews.
+
+### Dashboard
+
+Operational metrics, attributed item and worker ratings, and the order → scan → review timeline with confidence estimates.
+
+![ReviewStats dashboard showing sample metrics, item and worker ratings, and ambiguous and high-confidence review matches](docs/screenshots/dashboard.jpg)
+
+### Review ledger
+
+Reviews with expandable timing, attribution and likely-order details, including the evidence behind an ambiguous match.
+
+![ReviewStats review ledger with an expanded sample review showing timing evidence and attribution confidence](docs/screenshots/reviews.jpg)
 
 ## Features
 
