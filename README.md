@@ -2,6 +2,8 @@
 
 A personal web application connecting mock POS orders, QR/NFC scans and simulated reviews through explainable attribution and owner analytics.
 
+This App is made to be used alongside, QR scan to review/NFC tap to review devices. The device would lead to our server for tracking, then redirected to google reviews page for that store.
+
 **Built with:** Python, FastAPI, SQLAlchemy, SQLite, Pydantic, Jinja and JavaScript. Tested with Pytest; Docker and GitHub Actions configurations are included.
 
 ReviewStats explores a simple question: **which order is a review most likely to belong to?** It brings orders, scans and reviews into one place, uses scan timing to rank possible matches, and lets the owner investigate the evidence behind each result.
