@@ -1,5 +1,9 @@
 # ReviewStats
 
+**[Try the interactive demo →](https://thom4s05.github.io/reviewstats/)**
+
+Create sample orders, simulate QR/NFC scans and reviews, and inspect matching evidence. The GitHub Pages playground runs entirely in your browser with synthetic data; you can reset it at any time. The full Python application is described below.
+
 A personal web application connecting mock POS orders, QR/NFC scans and simulated reviews through explainable attribution and owner analytics.
 
 This App is made to be used alongside, QR scan to review/NFC tap to review devices. The device would lead to our server for tracking, then redirected to google reviews page for that store.
@@ -39,6 +43,8 @@ Reviews with expandable timing, attribution and likely-order details, including 
 The demo uses synthetic data. POS orders and reviews are simulated; live integrations and production usage are not claimed. Confidence scores come from a transparent heuristic and are not calibrated probabilities.
 
 ## Quick start
+
+For the browser-only playground, open the [hosted demo](https://thom4s05.github.io/reviewstats/). Its source is in [`demo/`](demo/); preview it with `python -m http.server 8765 --directory demo` and open `http://localhost:8765`. Run its matching checks with `node --test demo/model.test.mjs`. GitHub Actions publishes changes to `demo/` to GitHub Pages.
 
 From the repository directory, using Python 3.12 or 3.14:
 

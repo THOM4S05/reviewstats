@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10291f">
+  <meta name="description" content="Try ReviewStats: an interactive playground connecting sample orders, QR/NFC scans and simulated reviews.">
+  <title>ReviewStats · Interactive demo</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./demo.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+  <header><a class="brand" href="#dashboard">ReviewStats<span>PLAYGROUND</span></a><nav aria-label="Primary navigation"><a href="#dashboard">Dashboard</a><a href="#reviews">Reviews</a><a href="#scanpoints">Scanpoints</a><a href="#pos">Mock POS</a></nav><a class="source" href="https://github.com/THOM4S05/reviewstats">View source ↗</a></header>
+  <div class="demo-note"><strong>Interactive demo</strong><span>Synthetic data · saved only in this browser · no real reviews are sent</span><button id="reset" class="text-button">Reset demo</button></div>
+  <main id="content" tabindex="-1"></main>
+  <p id="notice" role="status" aria-live="polite"></p>
+  <footer>ReviewStats · Timing-based attribution estimates, never confirmed customer identity.<br>GitHub Pages playground. The full FastAPI app and its APIs are available in the <a href="https://github.com/THOM4S05/reviewstats">repository</a>.</footer>
+  <dialog id="reset-dialog"><h2>Start fresh?</h2><p>This replaces your playground changes with the original sample data.</p><form method="dialog"><button value="cancel" class="secondary">Keep exploring</button><button value="reset">Reset demo</button></form></dialog>
+</body>
+</html>
